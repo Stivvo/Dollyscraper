@@ -34,7 +34,7 @@ microsoft = WebDriverWait(browser, 30).until(
     EC.presence_of_element_located((By.ID, "idSIButton9")))
 microsoft.click()
 
-def Bibg(output):
+def Bibg(outputfile):
     months = {
         "gen" : "01",
         "feb" : "02",
@@ -79,21 +79,20 @@ def Bibg(output):
         hour = dates[i].text[base+17:base+19]
         human = "" + year + "_" + mon + "_" + day + "_" + hour + "_" + titles[i].text + ".mp4"
 
-        output.write("wget -c -O \"" + human + "\" -o \"" + human + ".log\" " + doublequote + " &\n")
+        outputfile.write("wget -c -O \"" + human + "\" -o \"" + human + ".log\" " + doublequote + " &\n")
         print(human)
         i += 1
 
-def Collaborate(output):
+def Collaborate(outputfile):
     lessons = WebDriverWait(browser, 40).until(
         EC.presence_of_all_elements_located((By.XPATH, "//ul/li/div/div/div/div/a")))
 
-    lastdown = "lasturl.txt"
-    lasturl = "" # avoid loading the collaborate page if already downloaded
-    try:
-        lastdownf = open(lastdown, "r")
-        lasturl = lastdownf.read()[:-1]
+    lasturlname = "lasturl.txt"
+    try: # avoid loading the collaborate page if already downloaded
+        lasturlfile = open(lasturlname, "r")
+        lasturl = lasturlfile.read()[:-1] # remove newline
         print("last url: ", lasturl)
-        lastdownf.close()
+        lasturlfile.close()
     except:
         lasturl = ""
 
@@ -133,39 +132,38 @@ def Collaborate(output):
             print("doesn't collaborate")
             continue
 
-        human = humans[i]
+        human = humans[i].replace("(", "[")
         if human[:11] == "[Esercizi] ":
             human = human[11:]
-        human = human.replace("(", "[")
         human = human.replace(")", "]")
         human = human.replace("\'", "m")
         human = human.replace("\"", "s")
 
         human = human[7:11] + "-" + human[4:6] + "-" + human[1:3] + human[12:]
         print(human)
-        output.write("wget -c -O \"" + human + ".mp4\" -o \"" + human + ".mp4.log\" \"" + video + "\" &\n")
+        outputfile.write("wget -c -O \"" + human + ".mp4\" -o \"" + human + ".mp4.log\" \"" + video + "\" &\n")
         i += 1
 
     if len(urls) > 0:
-        lastdownf = open(lastdown, "w")
-        lastdownf.write(urls[len(urls) - 1])
-        lastdownf.close()
+        lasturlfile = open(lasturlname, "w")
+        lasturlfile.write(urls[len(urls) - 1])
+        lasturlfile.close()
 
 argcount = 3
 while argcount < len(sys.argv):
     browser.get(sys.argv[argcount])
     print("\n", sys.argv[argcount + 1])
-    output = open(sys.argv[argcount + 1], "w")
-    output.write("#!/bin/sh\n")
+    outputfile = open(sys.argv[argcount + 1], "w")
+    outputfile.write("#!/bin/sh\n")
 
     if sys.argv[argcount + 2] == "bigb":
-        Bibg(output)
+        Bibg(outputfile)
     elif sys.argv[argcount + 2] == "collab":
-        Collaborate(output)
+        Collaborate(outputfile)
     else:
         print("available platforms: bigb collab")
 
     argcount += 3
-    output.close()
+    outputfile.close()
 
 browser.close()

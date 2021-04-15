@@ -1,7 +1,7 @@
 # Dollyscraper
 
-Downloads lessons recorded with BigBlueButton or Collaborate from
-dolly.fim.unimore using web scraping.
+Download lessons recorded with BigBlueButton or Collaborate from dolly using web
+scraping.
 
 ## Dependencies
 
