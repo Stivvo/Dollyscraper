@@ -16,8 +16,9 @@ Wget, Firefox and [geckodriver](https://github.com/mozilla/geckodriver/releases)
 ## Usage
 
 ```bash
-python dollyscraper.py <user> <password> <url> (bigb|collaborate) <outputfile>
-sh <outputfile>
+python dollyscraper.py <user> <password> <url1> </path/to/outputfile1> (bigb|collab) <url2> </path/to/outputfile2> (bigb|collab) ...
+sh </path/to/outputfile1>
+sh </path/to/outputfile2> ...
 ```
 
 Your dolly credentials must be given as first 2 parameters. <url> is the page of

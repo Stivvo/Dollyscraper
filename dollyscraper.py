@@ -7,6 +7,10 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.firefox.options import Options
 import sys
 
+if (len(sys.argv) - 3) % 3 != 0:
+    print("invalid number of arguments")
+    exit()
+
 options = Options()
 options.headless = False
 browser = webdriver.Firefox(options=options)
@@ -30,10 +34,7 @@ microsoft = WebDriverWait(browser, 30).until(
     EC.presence_of_element_located((By.ID, "idSIButton9")))
 microsoft.click()
 
-output = open(sys.argv[5], "w")
-output.write("#!/bin/sh\n")
-
-if sys.argv[4] == "bigb":
+def Bibg(output):
     months = {
         "gen" : "01",
         "feb" : "02",
@@ -82,9 +83,7 @@ if sys.argv[4] == "bigb":
         print(human)
         i += 1
 
-    browser.close()
-elif sys.argv[4] == "collaborate":
-
+def Collaborate(output):
     lessons = WebDriverWait(browser, 40).until(
         EC.presence_of_all_elements_located((By.XPATH, "//ul/li/div/div/div/div/a")))
 
@@ -101,6 +100,9 @@ elif sys.argv[4] == "collaborate":
     urls = []
     humans = []
     go = False
+    if len(lasturl) <= 1:
+        go = True
+
     for lesson in lessons:
         try:
             if lesson.text[:1] == "[":
@@ -111,14 +113,12 @@ elif sys.argv[4] == "collaborate":
                     humans.append(lesson.text)
                 else:
                     print(url, " already downloaded")
-
-                if url == lasturl:
-                    go = True
+                    if url == lasturl:
+                        go = True
         except:
             print("invalid link")
 
     i = 0
-    continn = False
     for url in urls:
         print(url)
         try:
@@ -146,11 +146,26 @@ elif sys.argv[4] == "collaborate":
         output.write("wget -c -O \"" + human + ".mp4\" -o \"" + human + ".mp4.log\" \"" + video + "\" &\n")
         i += 1
 
-    browser.close()
-    lastdownf = open(lastdown, "w")
     if len(urls) > 0:
+        lastdownf = open(lastdown, "w")
         lastdownf.write(urls[len(urls) - 1])
-else:
-    print("possibili piattaforme: bigb, collaborate")
+        lastdownf.close()
 
-output.close()
+argcount = 3
+while argcount < len(sys.argv):
+    browser.get(sys.argv[argcount])
+    print("\n", sys.argv[argcount + 1])
+    output = open(sys.argv[argcount + 1], "w")
+    output.write("#!/bin/sh\n")
+
+    if sys.argv[argcount + 2] == "bigb":
+        Bibg(output)
+    elif sys.argv[argcount + 2] == "collab":
+        Collaborate(output)
+    else:
+        print("available platforms: bigb collab")
+
+    argcount += 3
+    output.close()
+
+browser.close()
