@@ -62,10 +62,10 @@ def Bibg(outputfile):
     for button in buttons:
         url = button.get_attribute("data-href")[313:]
         print(url)
-        desk = "https://davy04.edunova.it/presentation/" + url + "/deskshare/deskshare.mp4"
+        deskshare = "https://davy04.edunova.it/presentation/" + url + "/deskshare/deskshare.mp4"
         webcams = "https://davy04.edunova.it/presentation/" + url + "/video/webcams.mp4"
 
-        desk = "\"" + desk + "\""
+        deskshare = "\"" + deskshare + "\""
         webcams = "\"" + webcams + "\""
         day = dates[i].text[5:7]
 
@@ -80,11 +80,19 @@ def Bibg(outputfile):
         year = dates[i].text[base+11:base+15]
         hour = dates[i].text[base+17:base+19]
         human = "" + year + "_" + mon + "_" + day + "_" + hour + "_" + titles[i].text
-
-        outputfile.write("wget -c -O \"" + human + ".desk.mp4\" -o \"" + human + ".desk.mp4.log\" " + desk + " &\n")
-        outputfile.write("wget -c -O \"" + human + ".webcams.mp4\" -o \"" + human + ".webcams.mp4.log\" " + webcams + " &\n")
         print(human)
         i += 1
+
+        desksharef = "\"" + human + ".deskshare.mp4\""
+        webcamsf = "\"" + human + ".webcams.mp4\""
+        joinf = "\"" + human + ".join.mp4\""
+        desksharel = "\"" + human + ".deskshare.mp4.log\""
+        webcamsl = "\"" + human + ".webcams.mp4.log\""
+
+        outputfile.write(
+            "wget -c -O " + desksharef + " -o " + desksharel + " " + deskshare +
+            " && wget -c -O " + webcamsf + " -o " + webcamsl + " " + webcams +
+            " && ffmpeg -i " + desksharef + " -i " + webcamsf + " -c:v copy -c:a aac -map 0:v:0 -map 1:a:0 " + joinf + " & \n")
 
 def Collaborate(outputfile):
     lessons = WebDriverWait(browser, 40).until(
