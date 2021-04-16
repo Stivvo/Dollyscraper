@@ -61,10 +61,12 @@ def Bibg(outputfile):
     i = 0
     for button in buttons:
         url = button.get_attribute("data-href")[313:]
-        url = "https://davy04.edunova.it/presentation/" + url + "/deskshare/deskshare.mp4"
         print(url)
+        desk = "https://davy04.edunova.it/presentation/" + url + "/deskshare/deskshare.mp4"
+        webcams = "https://davy04.edunova.it/presentation/" + url + "/video/webcams.mp4"
 
-        doublequote = "\"" + url + "\""
+        desk = "\"" + desk + "\""
+        webcams = "\"" + webcams + "\""
         day = dates[i].text[5:7]
 
         if day[1:2] == " ":
@@ -77,9 +79,10 @@ def Bibg(outputfile):
         mon = months[dates[i].text[base+7:base+10]]
         year = dates[i].text[base+11:base+15]
         hour = dates[i].text[base+17:base+19]
-        human = "" + year + "_" + mon + "_" + day + "_" + hour + "_" + titles[i].text + ".mp4"
+        human = "" + year + "_" + mon + "_" + day + "_" + hour + "_" + titles[i].text
 
-        outputfile.write("wget -c -O \"" + human + "\" -o \"" + human + ".log\" " + doublequote + " &\n")
+        outputfile.write("wget -c -O \"" + human + ".desk.mp4\" -o \"" + human + ".desk.mp4.log\" " + desk + " &\n")
+        outputfile.write("wget -c -O \"" + human + ".webcams.mp4\" -o \"" + human + ".webcams.mp4.log\" " + webcams + " &\n")
         print(human)
         i += 1
 
