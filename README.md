@@ -44,11 +44,4 @@ time new lessons will be downloaded. With bigb this is not necessary.
 
 Some bigb lessons are actually made of two videos with the same duration: the
 webcam (which the audio) and the deskshare (mute), which will both be
-downloaded. If ffmpeg is installed, <outputfile> will generate ``.join.mp4``
-files with the audio of the webcam and the video of the deskshare. In this case
-the other files can safely be deleted after all ffmpeg conversions have
-finished:
-
-```bash
-rm *.deskshare.mp4 *.webcams.mp4
-```
+downloaded. If ffmpeg is installed, <outputfile> will join them.

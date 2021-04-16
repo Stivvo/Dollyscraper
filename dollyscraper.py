@@ -90,9 +90,11 @@ def Bibg(outputfile):
         webcamsl = "\"" + human + ".webcams.mp4.log\""
 
         outputfile.write(
-            "wget -c -O " + desksharef + " -o " + desksharel + " " + deskshare +
-            " && wget -c -O " + webcamsf + " -o " + webcamsl + " " + webcams +
-            " && ffmpeg -i " + desksharef + " -i " + webcamsf + " -c:v copy -c:a aac -map 0:v:0 -map 1:a:0 " + joinf + " & \n")
+            "[ -f " + joinf + " ] || wget -c -O " + desksharef + " -o " + desksharel + " " + deskshare +
+            " ; [ -f " + joinf + " ] || wget -c -O " + webcamsf + " -o " + webcamsl + " " + webcams +
+            " ; [ -f " + joinf + " ] || ffmpeg -i " + desksharef + " -i " + webcamsf + " -c:v copy -c:a aac -map 0:v:0 -map 1:a:0 " + joinf +
+            " ; [ -f " + joinf + " ] && echo safely deleting: " + desksharef + " " + webcamsf +
+            " ; [ -f " + joinf + " ] && rm " + desksharef + " " + webcamsf + " & \n")
 
 def Collaborate(outputfile):
     lessons = WebDriverWait(browser, 40).until(
