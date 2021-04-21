@@ -124,7 +124,8 @@ def Collaborate(outputfile):
                     urls.append(url)
                     humans.append(lesson.text)
                 else:
-                    print(url, " already downloaded")
+                    print(url)
+                    print("already downloaded")
                     if url == lasturl:
                         go = True
         except:
@@ -161,7 +162,7 @@ def Collaborate(outputfile):
 
     if len(urls) > 0:
         lasturlfile = open(lasturlname, "w")
-        lasturlfile.write(urls[len(urls) - 1])
+        lasturlfile.write(urls[i - 1])
         lasturlfile.close()
 
 argcount = 3
