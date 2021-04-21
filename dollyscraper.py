@@ -131,10 +131,11 @@ def Collaborate(outputfile):
             print("invalid link")
 
     i = 0
-    for url in urls:
-        print(url)
+    while i < len(urls):
+        human = humans[i].replace("(", "[")
+        i = i + 1
         try:
-            browser.get(url)
+            browser.get(urls[i - 1])
             if browser.current_url.find("drive.google") != -1:
                 print("skipped gdrive")
                 raise ValueError('Gdrive videos cannot be downloaded')
@@ -155,7 +156,6 @@ def Collaborate(outputfile):
         human = human[7:11] + "-" + human[4:6] + "-" + human[1:3] + human[12:]
         print(human)
         outputfile.write("wget -c -O \"" + human + ".mp4\" -o \"" + human + ".mp4.log\" \"" + video + "\" &\n")
-        i += 1
 
     if len(urls) > 0:
         lasturlfile = open(lasturlname, "w")
