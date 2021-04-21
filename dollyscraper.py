@@ -146,12 +146,14 @@ def Collaborate(outputfile):
             print("doesn't collaborate")
             continue
 
-        human = humans[i].replace("(", "[")
         if human[:11] == "[Esercizi] ":
             human = human[11:]
         human = human.replace(")", "]")
-        human = human.replace("\'", "m")
-        human = human.replace("\"", "s")
+
+        if human[-1:] == "]":
+            openpos = human.rfind(" ")
+            subhuman = human[openpos:].replace("\'", "m").replace("\"", "s").replace("’", "m").replace("”", "s")
+            human = human[:openpos] + subhuman
 
         human = human[7:11] + "-" + human[4:6] + "-" + human[1:3] + human[12:]
         print(human)
