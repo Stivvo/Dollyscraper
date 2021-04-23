@@ -6,6 +6,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.firefox.options import Options
 import sys
+import os
 
 if (len(sys.argv) - 3) % 3 != 0:
     print("invalid number of arguments")
@@ -34,7 +35,13 @@ microsoft = WebDriverWait(browser, 30).until(
     EC.presence_of_element_located((By.ID, "idSIButton9")))
 microsoft.click()
 
-def Bibg(outputfile):
+def WriteToFile(cmd, outputfile):
+    outputfile.write(cmd + " & \n")
+
+def Download(cmd, outputpath):
+    os.system("cd " + outputpath + " && " + cmd + " &")
+
+def Bibg(Outputfun, fileorpath):
     months = {
         "gen" : "01",
         "feb" : "02",
@@ -89,14 +96,11 @@ def Bibg(outputfile):
         desksharel = "\"" + human + ".deskshare.mp4.log\""
         webcamsl = "\"" + human + ".webcams.mp4.log\""
 
-        outputfile.write(
-            "[ -f " + joinf + " ] || wget -c -O " + desksharef + " -o " + desksharel + " " + deskshare +
-            " ; [ -f " + joinf + " ] || wget -c -O " + webcamsf + " -o " + webcamsl + " " + webcams +
-            " ; [ -f " + joinf + " ] || ffmpeg -i " + desksharef + " -i " + webcamsf + " -c:v copy -c:a aac -map 0:v:0 -map 1:a:0 " + joinf +
-            " ; [ -f " + joinf + " ] && echo safely deleting: " + desksharef + " " + webcamsf +
-            " ; [ -f " + joinf + " ] && rm " + desksharef + " " + webcamsf + " & \n")
+        Outputfun("[ -f " + joinf + " ] || wget -c -O " + desksharef + " -o " + desksharel + " " + deskshare + \
+                " ; [ -f " + joinf + " ] || wget -c -O " + webcamsf + " -o " + webcamsl + " " + webcams + \
+                " ; [ -f " + joinf + " ] || ffmpeg -i " + desksharef + " -i " + webcamsf + " -c:v copy -c:a aac -map 0:v:0 -map 1:a:0 " + joinf, fileorpath)
 
-def Collaborate(outputfile):
+def Collaborate(Outputfun, fileorpath):
     lessons = WebDriverWait(browser, 40).until(
         EC.presence_of_all_elements_located((By.XPATH, "//ul/li/div/div/div/div/a")))
 
@@ -158,7 +162,7 @@ def Collaborate(outputfile):
 
         human = human[7:11] + "-" + human[4:6] + "-" + human[1:3] + human[12:]
         print(human)
-        outputfile.write("wget -c -O \"" + human + ".mp4\" -o \"" + human + ".mp4.log\" \"" + video + "\" &\n")
+        Outputfun("wget -c -O \"" + human + ".mp4\" -o \"" + human + ".mp4.log\" \"" + video + "\"", fileorpath)
 
     if len(urls) > 0:
         lasturlfile = open(lasturlname, "w")
@@ -169,17 +173,24 @@ argcount = 3
 while argcount < len(sys.argv):
     browser.get(sys.argv[argcount])
     print("\n", sys.argv[argcount + 1])
-    outputfile = open(sys.argv[argcount + 1], "w")
-    outputfile.write("#!/bin/sh\n")
 
+    scrapefun = Collaborate
     if sys.argv[argcount + 2] == "bigb":
-        Bibg(outputfile)
+        scrapefun = Bibg
     elif sys.argv[argcount + 2] == "collab":
-        Collaborate(outputfile)
+        scrapefun = Collaborate
     else:
         print("available platforms: bigb collab")
+        continue
+
+    outputpath = sys.argv[argcount + 1]
+    if (os.path.isdir(outputpath)):
+        scrapefun(Download, outputpath)
+    else:
+        outputfile = open(outputpath, "w")
+        outputfile.write("#!/bin/sh\n")
+        scrapefun(WriteToFile, outputfile)
+        outputfile.close()
 
     argcount += 3
-    outputfile.close()
-
 browser.close()
