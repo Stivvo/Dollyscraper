@@ -8,32 +8,24 @@ from selenium.webdriver.firefox.options import Options
 import sys
 import os
 
-if (len(sys.argv) - 3) % 3 != 0:
-    print("invalid number of arguments")
-    exit()
+def Login(user, passwd, url, browser):
+    browser.get(url)
+    loginbtn = WebDriverWait(browser, 30).until(
+        EC.presence_of_element_located((By.CLASS_NAME, "btn-primary")))
+    loginbtn.click()
 
-options = Options()
-options.headless = False
-browser = webdriver.Firefox(options=options)
+    username = WebDriverWait(browser, 30).until(
+        EC.presence_of_element_located((By.ID, "username")))
+    password = browser.find_element_by_id("password")
 
-browser.get(sys.argv[3])
+    username.send_keys(user)
+    password.send_keys(passwd)
+    btn = browser.find_element_by_name("_eventId_proceed")
+    btn.click()
 
-loginbtn = WebDriverWait(browser, 30).until(
-    EC.presence_of_element_located((By.CLASS_NAME, "btn-primary")))
-loginbtn.click()
-
-username = WebDriverWait(browser, 30).until(
-    EC.presence_of_element_located((By.ID, "username")))
-password = browser.find_element_by_id("password")
-
-username.send_keys(sys.argv[1])
-password.send_keys(sys.argv[2])
-btn = browser.find_element_by_name("_eventId_proceed")
-btn.click()
-
-microsoft = WebDriverWait(browser, 30).until(
-    EC.presence_of_element_located((By.ID, "idSIButton9")))
-microsoft.click()
+    microsoft = WebDriverWait(browser, 30).until(
+        EC.presence_of_element_located((By.ID, "idSIButton9")))
+    microsoft.click()
 
 def WriteToFile(cmd, outputfile):
     outputfile.write(cmd + " & \n")
@@ -163,16 +155,23 @@ def Collaborate(Outputfun, fileorpath):
         human = human[7:11] + "-" + human[4:6] + "-" + human[1:3] + human[12:]
         print(human)
         Outputfun("wget -c -O \"" + human + ".mp4\" -o \"" + human + ".mp4.log\" \"" + video + "\"", fileorpath)
-
     if len(urls) > 0:
         lasturlfile = open(lasturlname, "w")
         lasturlfile.write(urls[i - 1])
         lasturlfile.close()
 
+if (len(sys.argv) - 3) % 3 != 0:
+    print("invalid number of arguments")
+    exit()
+
+options = Options()
+options.headless = False
+browser = webdriver.Firefox(options=options)
+Login(sys.argv[1], sys.argv[2], sys.argv[3], browser)
+
 argcount = 3
 while argcount < len(sys.argv):
-    browser.get(sys.argv[argcount])
-    print("\n", sys.argv[argcount + 1])
+    print("\nDownload to: " + sys.argv[argcount + 1])
 
     scrapefun = Collaborate
     if sys.argv[argcount + 2] == "bigb":
@@ -193,4 +192,6 @@ while argcount < len(sys.argv):
         outputfile.close()
 
     argcount += 3
+    if argcount < len(sys.argv):
+        browser.get(sys.argv[argcount])
 browser.close()
